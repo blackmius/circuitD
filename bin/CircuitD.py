@@ -6,11 +6,14 @@ import pygame
 
 pygame.init()
 
+import gui
+
 import time
 import os
 import sys
 
 import math
+import logic
 
 get_current_second = lambda: int(time.time())
 get_current_milisecond = lambda: int(round(time.time() * 1000))
@@ -23,10 +26,6 @@ percent = lambda max, percent: int(float(max)/100*percent)
 
 mpx = lambda: mouse.get_pos()[0]
 mpy = lambda: mouse.get_pos()[1]
-
-AND = lambda a, b: a and b
-OR = lambda a, b: a or b
-NOT = lambda a: 0 if a else 1
 
 def outline(image, color=(0,0,0), threshold=127):
     imgmask = mask.from_surface(image, threshold)
