@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import types
 
 AND = lambda a, b: bool(a) and bool(b)
 OR = lambda a, b: bool(a) or bool(b)
@@ -11,6 +12,7 @@ class outlet:
         self.owner = owner
         self.name = name
         self.connects = []  
+        self.level = 0
 
     def connect(self, inputs):
         if type(inputs) != type([]):
@@ -28,20 +30,37 @@ class outlet:
         
         self.value = value
         
+        self.update()
+
+    
+    def update(self):       
         for con in self.connects:
-            con.set(value)
-            con.owner.eval()
+            con.set(self.value)
+            
+            if con.owner != self.owner:
+                con.owner.eval()
+            else:
+                if self.level == 0:
+                    self.level += 1
+                    con.owner.eval()
+                    
+        
+        self.level = 0
 
 class PrimElement:
-	def __init__(self, name):
-		self.name = name
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
 
-	def eval(self):
-		return
+    def eval(self):
+        return
+    
+    def update(self):
+        self.out.update()
 
 class Not(PrimElement):
     def __init__(self, name):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'not')
         self.in1 = outlet(self, 'A')
         self.out = outlet(self, 'B')
 
@@ -50,7 +69,7 @@ class Not(PrimElement):
 
 class And(PrimElement):
     def __init__(self, name):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'and')
         self.in1 = outlet(self, 'A')
         self.in2 = outlet(self, 'B')
         self.out = outlet(self, 'C')
@@ -60,7 +79,7 @@ class And(PrimElement):
 
 class Or(PrimElement):
     def __init__(self, name):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'or')
         self.in1 = outlet(self, 'A')
         self.in2 = outlet(self, 'B')
         self.out = outlet(self, 'C')
@@ -70,7 +89,7 @@ class Or(PrimElement):
 
 class Switch(PrimElement):
     def __init__(self, name):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'switch')
         self.out = outlet(self, 'A')
 
     def eval(self):
@@ -78,7 +97,7 @@ class Switch(PrimElement):
 
 class Bulb(PrimElement):
     def __init__(self, name):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'bulb')
         self.value = False
         self.in1 = outlet(self, 'A')
 
@@ -88,46 +107,47 @@ class Bulb(PrimElement):
 
 class Constant(PrimElement):
     def __init__(self, name, value):
-        PrimElement.__init__(self, name)
+        PrimElement.__init__(self, name, 'constant')
         self.value = value
         
         self.out = outlet(self, 'A')
         self.out.value = self.value
+    
+    def eval(self):
+        self.out.update()
 
 
 class Element(PrimElement):
-	def __init__(self, name):
-		PrimElement.__init__(self, name)
-		self.schema = []
+    def __init__(self, name):
+        PrimElement.__init__(self, name, name)
+    
+    def add(self, gate):
+        setattr(self, gate.name, gate)
+    
+    def update(self):
+        attr = []
+        
+        for i in dir(self):
+            if type(getattr(self, i)) is types.InstanceType:
+                attr.append(i)
+        
+        for i in attr:
+            if getattr(self, i).type == 'switch':
+                getattr(self, i).update()
 
-	def eval(self):
-		return
+El = Element('Xor')
 
-S1 = Switch('s1')
-S2 = Switch('s2')
+El.add(Switch('s1'))
+El.add(Switch('s2'))
 
-N1 = Not('n1')
-N2 = Not('n2')
+N = Not('n')
+B1 = Bulb('b2')
 
-A1 = And('a1')
-A2 = And('a2')
+N.out.connect(N.in1)
+N.out.connect(B1.in1)
 
-O1 = Or('o1')
+print N.out.value, B1.value
 
-B = Bulb('b1')
+N.update()
 
-S1.eval()
-S2.eval()
-
-S1.out.connect([N1.in1, A2.in1])
-
-S2.out.connect([N2.in1, A1.in2])
-
-N1.out.connect(A1.in1)
-N2.out.connect(A2.in2)
-
-A1.out.connect(O1.in1)
-A2.out.connect(O1.in2)
-
-O1.out.connect(B.in1)
-print S1.out.value, S2.out.value, N1.out.value, N2.out.value, A1.out.value, A2.out.value, B.value
+print N.out.value, B1.value

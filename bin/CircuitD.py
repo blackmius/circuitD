@@ -628,7 +628,7 @@ class inputbox:
 				event = pygame.event.poll()
 				
 				if event.type == KEYDOWN:
-					if event.key == K_BACKSPACE:
+					if event.key == K_BACKworkspace:
 						self.text = self.text[:-1]
 
 					elif event.key == K_RETURN or event.key == K_KP_ENTER:
@@ -655,7 +655,7 @@ class inputbox:
 					if self.text != '':
 						try:
 							if key[self.key[0]]:
-								if self.key[0] == K_BACKSPACE:
+								if self.key[0] == K_BACKworkspace:
 									self.text = self.text[:-1]
 								
 								elif self.mode == 'INPUT':
@@ -765,8 +765,8 @@ class inputbox:
 class window:
 	info = display.Info()
 	
-	width = info.current_w
-	height = info.current_h
+	width = 640
+	height = 480
 
 	minWidth = 640
 	minHeight = 480
@@ -933,7 +933,7 @@ class info:
 
 info = info()
 
-class space:
+class workspace:
 	surface = Surface((camera.w, camera.h))
 	gates = []
 
@@ -944,7 +944,7 @@ class space:
 	gateselected = False
 
 	def resize(self):
-		surface = Surface((camera.w, camera.h))
+		self.surface = Surface((camera.w, camera.h))
 
 	def create_gate(self, type):
 		self.gates.append(gate(type))
@@ -955,7 +955,7 @@ class space:
 			self.mousepressed = True
 		
 		for gate in range(len(self.gates)):
-			'''
+			
 			#выборка элементов
 			if self.gates[gate].selected:
 				if gate < len(self.gates) - 1:
@@ -963,7 +963,7 @@ class space:
 					b = self.gates[gate]
 					self.gates[gate] = a
 					self.gates[len(self.gates) - 1] = b
-			'''
+
 
 			self.gates[len(self.gates)-1-gate].update()
 
@@ -978,7 +978,7 @@ class space:
 
 		window.screen.blit(self.surface, (gui.chooseCircuitOffset + gui.chooseCircuitWidth + gui.chooseCircuitArrowsWidth, gui.pannelHeight))
 
-space = space()
+workspace = workspace()
 
 class gate:
 	def __init__(self, type):
@@ -1002,13 +1002,13 @@ class gate:
 	def update(self):
 		if collide(self.x + gui.chooseCircuitOffset + gui.chooseCircuitWidth + gui.chooseCircuitArrowsWidth, mouse.get_pos()[0] + camera.x, self.y + gui.pannelHeight, mouse.get_pos()[1] + camera.y, self.w, 1, self.h, 1):
 			if self.mousepressed == False:
-				if self.pressed == False and mouse.get_pressed()[0] and space.gateselected == False:
+				if self.pressed == False and mouse.get_pressed()[0] and workspace.gateselected == False:
 					self.mouseoffset = [mouse.get_pos()[0] + camera.x - self.x, mouse.get_pos()[1] + camera.y - self.y]
 					
 					self.mousepressed = True
 					self.pressed = True
 
-					space.gateselected = True
+					workspace.gateselected = True
 
 					self.selected = True
 		else:
@@ -1027,7 +1027,7 @@ class gate:
 			else:
 				self.pressed = False
 
-				space.gateselected = False
+				workspace.gateselected = False
 
 		
 		if mouse.get_pressed()[0]:
@@ -1040,9 +1040,9 @@ class gate:
 	def draw(self):
 		if camera.drawPerms(self.x, self.y, self.w, self.h):
 			if self.selected:
-				space.surface.blit(self.outline, ((self.x - camera.x - 1, self.y - camera.y - 1)))
+				workspace.surface.blit(self.outline, ((self.x - camera.x - 1, self.y - camera.y - 1)))
 			
-			space.surface.blit(self.image, (self.x - camera.x, self.y - camera.y))
+			workspace.surface.blit(self.image, (self.x - camera.x, self.y - camera.y))
 
 class gui:
 	chooseCircuitWidth = 200
@@ -1153,11 +1153,11 @@ class gui:
 			self.chooseCircuitArrows.update()
 			self.chooseCircuitSlider.update()
 
-		space.update()
+		workspace.update()
 
 	
 	def draw(self):
-		space.draw()
+		workspace.draw()
 
 		window.screen.blit(self.chooseCircuitSurface, (self.chooseCircuitOffset, self.pannelHeight))
 		window.screen.blit(self.chooseCircuitArrowsBg, (self.chooseCircuitOffset + self.chooseCircuitWidth, self.pannelHeight))
@@ -1234,7 +1234,7 @@ def events():
 			window.resize(e.size)
 			gui.resize()
 			camera.resize()
-			space.resize()
+			workspace.resize()
 
 	camera.update()
 
