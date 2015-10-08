@@ -1,5 +1,5 @@
 #CircuitD
 
-python 2.7
-
-main file bin/CircuitD.py
+requirements
+1. python 2.7
+2. pygame
