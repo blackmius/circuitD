@@ -125,8 +125,8 @@ class camera:
 		self.controls()
 
 	def resize(self, window):
-		self.w = window.width - 210
-		self.h = window.height - 72
+		self.w = window.width
+		self.h = window.height
 
 	def drawPerms(self, ox, oy, ow, oh):
 		if collide(self.x, ox, self.y, oy, self.w, ow*self.zoom, self.h, oh*self.zoom):
@@ -149,13 +149,13 @@ class workspace:
 
 		self.gateselected = False
 		
-		self.offset = 0
+		self.offset = 200
 
 	def resize(self):
 		self.surface = Surface((camera.w, camera.h))
 
 	def change_offset(self, offset):
-		self.offset = offset
+		self.offset = offset + 200
 
 	def create_gate(self, type):
 		self.gates.append(gate(type, self))
