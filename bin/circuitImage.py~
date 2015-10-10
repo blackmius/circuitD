@@ -4,25 +4,13 @@ from pygame.locals import *
 from pygame import *
 import pygame
 
-import time
-import os
-import sys
-
-import math
-
-if sys.platform == 'win32' or sys.platform == 'win64':
-	os.environ['SDL_VIDEO_CENTERED'] = '1'
-
-pygame.init()
-
-def colorize(image, newColor):
-	image = image.copy()
-
-	image.fill(newColor[0:3] + (0,), None, pygame.BLEND_RGBA_ADD)
-
-	return image  
-
-def circuitImage(name, size, inputs, outputs, inputsname, outputsname):
+def circuitImage(name, size, inputs, outputs, inputsname, outputsname): 
+    if len(inputsname) < inputs:
+        inputsname += ['' for i in range(inputs - len(inputsname))]
+    
+    if len(outputsname) < outputs:
+        outputsname += ['' for o in range(outputs - len(outputsname))]
+    
 	if name != '':
 		fontsize = (size-4)/2/2
 		font = pygame.font.Font('../data/fonts/pixelfont.ttf', fontsize)
@@ -74,49 +62,3 @@ def circuitImage(name, size, inputs, outputs, inputsname, outputsname):
 		surface.blit(cfont.render(outputsname[o], 0, (0, 0, 0)), (fontsize + w - 3 - cfont.size(outputsname[o])[0], o*connectIndent + sideIndent - cfont.size(outputsname[o])[1]/2))
 	
 	return surface
-
-class window:
-	info = display.Info()
-	
-	width = 640
-	height = 480
-	
-	screen = display.set_mode((width, height))
-	
-	fullscreen = False
-
-	icon = transform.scale(pygame.image.load('../data/imgs/icon.png'), (32, 32))
-	display.set_icon(icon)
-
-	display.set_caption('circuitD')
-	
-	def toggle_fullscreen(self):
-		self.fullscreen = not self.fullscreen
-		self.screen = display.set_mode((self.width, self.height), FULLSCREEN) if self.fullscreen else display.set_mode((self.width, self.height))
-
-window = window()
-
-def events():
-	key = pygame.key.get_pressed()
-	
-	for e in event.get():
-		if e.type == pygame.QUIT:
-			raise SystemExit
-		if e.type == KEYDOWN:
-			if e.key == K_ESCAPE:
-				raise SystemExit
-
-def mainloop():
-	c = circuitImage('&', 128, 3, 1, ['dasfasf', 'b', 'q'], ['dasfasf'])
-
-	window.screen.fill((205, 205, 205))
-
-	window.screen.blit(c, (100, 100))
-
-	display.update()
-
-	while True:
-		events()
-
-if __name__ == "__main__":
-	mainloop()

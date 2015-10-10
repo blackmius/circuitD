@@ -7,26 +7,11 @@ import pygame
 from button import button
 from slider import slider
 
-from circuitImage import circuitImage
-
 percent = lambda max, percent: int(float(max)/100*percent)
 
-class tab:
-    def __init__(self, name):
-        self.open = True
-        self.elements =  [
-        ['&', circuitImage('&', 50, 0, 0, [], [])], 
-        ['1', circuitImage('1', 50, 0, 0, [], [])], 
-        ['!', circuitImage('!', 50, 0, 0, [], [])]
-        ]
-        
-    def addElement(self, name):
-        self.elements.append([name, circuitImage(name, 50, 0, 0, [], [])])
-        
 class palette:
     def __init__(self, window):
         self.window = window
-        
         self.width = 200
         self.height = self.window.height - 72
     
@@ -67,31 +52,29 @@ class palette:
 
         self.pannelWidth = 640
         self.pannelHeight = 36
-        
-        self.offsetreturn = self.offset
-        self.pastoffsetreturn = self.offset
-        
+
     def resize(self):
-        self.width = 200
+        self.window = 200
 
         self.height = self.window.height - 72
 
-        self.surface = Surface((self.width, self.height)).convert_alpha()
+        self.surface = Surface((self.width, self.weight)).convert_alpha()
         self.surface.fill((208, 214, 219, 255))
 
-        self.arrowsBg = Surface((self.arrowsWidth+2, self.height))
+        self.arrowsBg = surface((self.arrowsWidth+2, self.height))
 
-        self.arrows = button(self.width+1, self.height/2 - self.arrowsHeight/2, self.window.screen, [self.arrowsImg1, self.arrowsImg2], imgnum = 0 if self.offset == 0 - self.width else 1, backlight = (255, 255, 255, 30))
+        self.arrows = button(self.width+1, self.height/2 - self.arrowsHeight/2, window.screen, [self.arrowsImg1, self.arrowsImg2], imgnum = 0 if Offset == 0 - self.width else 1, backlight = (255, 255, 255, 30))
 
         self.circuitSurface = Surface((self.width - 15, self.height)).convert_alpha()
         self.circuitSurface.fill((0, 0, 0, 0))
 
         self.sliderHeight = self.height
 
-        self.slider = slider(self.window.screen, self.sliderX, self.sliderY, self.sliderWidth, self.sliderHeight, self.sliderMaxoffset)
+        self.slider = slider(window.screen, self.sliderX, self.sliderY, self.sliderWidth, self.sliderHeight, self.sliderMaxoffset)
 
         self.arrows.change_coords(x = self.offset + self.width + 1)
         self.slider.change_coords(x = self.offset + self.width - percent(self.width - self.width/4, 10))
+
 
     def changeOffset(self):
         self.offsetTo = self.offset - self.width if not self.offset - self.width < 0 - 360 else 0
@@ -111,8 +94,7 @@ class palette:
                 self.offset -= self.width/self.moveSpeed
                 if self.offset < self.offsetTo:
                     self.offset = self.offsetTo
-            
-            self.offsetreturn = self.offset
+
             self.arrows.change_coords(x = self.offset + self.width + 1)
             self.slider.change_coords(x = self.offset + self.width - percent(self.width - self.width/4, 10))
         
@@ -122,11 +104,6 @@ class palette:
             
             if self.slider.update():
                 self.changeOffsetY()
-        
-        if self.pastoffsetreturn != self.offsetreturn:
-            self.pastoffsetreturn = self.offsetreturn
-            
-            return self.offsetreturn
 
     
     def draw(self, whereupon):

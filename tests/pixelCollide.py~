@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from pygame.locals import *
+from pygame import *
+import pygame
+
+pygame.init()
+
+def pixelCollide(rect1, rect2, mask1, mask2):
+	rect = rect1.clip(rect2)
+	
+	if rect.width==0 or rect.height==0:
+		return False
+	
+	x1,y1,x2,y2 = rect.x-rect1.x,rect.y-rect1.y,rect.x-rect2.x,rect.y-rect2.y
+	
+	for x in xrange(rect.width):
+		for y in xrange(rect.height):
+			if mask1[x1+x][y1+y] and mask2[x2+x][y2+y]:
+				return True
+			
+			else:
+				continue
+   
+	return False
+
+def getMask(image):
+	mask=[]
+	
+	for x in range(image.get_size()[0]):
+		mask.append([])
+		
+		for y in range(image.get_size()[1]):
+			mask[x].append(True)
+   
+	return mask
+
+class window:
+	info = display.Info()
+	
+	width = 640
+	height = 480
+	
+	screen = display.set_mode((width, height))
+	
+	fullscreen = False
+
+	icon = transform.scale(pygame.image.load('../data/imgs/icon.png'), (32, 32))
+	display.set_icon(icon)
+
+	display.set_caption('circuitD')
+	
+	def toggle_fullscreen(self):
+		self.fullscreen = not self.fullscreen
+		self.screen = display.set_mode((self.width, self.height), FULLSCREEN) if self.fullscreen else display.set_mode((self.width, self.height))
+
+window = window()
+
+def events():
+	key = pygame.key.get_pressed()
+	
+	for e in event.get():
+		if e.type == pygame.QUIT:
+			raise SystemExit
+		if e.type == KEYDOWN:
+			if e.key == K_ESCAPE:
+				raise SystemExit
+
+def mainloop():
+	rect = Surface((100, 100))
+	c = Surface((50, 50)).convert_alpha()
+	c.fill((0, 0, 0, 0))
+	
+	draw.circle(c, (255, 0, 0), (25, 25), 25)
+	
+	color = (205, 205, 205)
+	x = 0
+	
+	mask1 = getMask(c)
+	mask2 = getMask(rect)
+	
+	rect1 = Rect(100, 100, 100, 100)
+	
+	while True:
+	    rect2 = Rect(50, 50, x, 60)
+		if key.get_pressed()[K_RIGHT]:
+			x += 1
+		if key.get_pressed()[K_LEFT]:
+			x -= 1
+		
+		if pixelCollide(rect1, rect2, mask1, mask2):
+		    color = (0, 255, 0)
+	    else:
+	        color = (205, 205, 205)
+	        
+		window.screen.fill(color)
+		
+		window.screen.blit(rect, (100, 100))
+		window.screen.blit(c, (x, 60))
+
+		events()
+
+		display.update()
+		
+
+if __name__ == "__main__":
+	mainloop()
+

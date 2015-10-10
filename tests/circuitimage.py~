@@ -107,7 +107,7 @@ def events():
 				raise SystemExit
 
 def mainloop():
-	c = circuitImage('&', 128, 3, 1, ['dasfasf', 'b', 'q'], ['dasfasf'])
+	c = circuitImage('&', 128, 3, 1, ['dasfasf', 'b', 'q'], ['casfasfasfasf'])
 
 	window.screen.fill((205, 205, 205))
 
