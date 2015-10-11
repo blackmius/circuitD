@@ -69,11 +69,14 @@ class button:
         self.rect = Rect(self.x + self.whereuponX - self.offsetx, self.y + self.whereuponY - self.offsety, self.sizes[0], self.sizes[1])
     
     def change_whereuponvars(self, x = 0, y = 0, w = display.Info().current_w, h = display.Info().current_h):
-        self.whereuponW = whereuponvars[2]
-        self.whereuponH = whereuponvars[3]
+        self.whereuponW = w
+        self.whereuponH = h
 
-        self.whereuponX = whereuponvars[0]
-        self.whereuponY = whereuponvars[1]
+        self.whereuponX = x
+        self.whereuponY = y
+
+        self.rect = Rect(self.x + self.whereuponX - self.offsetx, self.y + self.whereuponY - self.offsety, self.sizes[0], self.sizes[1])
+    
 
     def change_coords(self, x = None, y = None):
         self.x = x if x != None else self.x

@@ -135,9 +135,9 @@ class workspace:
 		
 		self.offset = 200
 		
-		self.gridW = 10
+		self.gridW = 15
 		
-		self.gridH = 10
+		self.gridH = 15
 		
 		self.grid = Surface((camera.w + self.gridW, camera.h + self.gridH)).convert_alpha()
 		

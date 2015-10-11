@@ -107,9 +107,9 @@ class slider:
     def change_offset(self, offx = None, offy = None, absoffset = None, maxoffset = None):
         self.offsetx = offx if offx != None else self.offsetx
         self.offsety = offy if offy != None else self.offsety
+        
         if absoffset != None:
             self.absoffset = absoffset
-            self.updated = False
             self.offset = absoffset/self.pxperoffset
         
         if maxoffset != None:
@@ -120,6 +120,18 @@ class slider:
             
             else:
                 self.pxperoffset = float(self.maxoffset) / (self.width - self.height)
+
+            if self.maxoffset != 0:
+                if self.absoffset > self.maxoffset:
+                    self.absoffset = self.maxoffset
+                    
+                self.offset = self.absoffset/self.pxperoffset
+
+            else:
+                self.offset = 0
+                self.absoffset = 0
+
+        self.updated = False
 
     def collide(self, x, y, w, h, slider):
         if slider:
