@@ -12,11 +12,11 @@ def circuitImage(name, size, inputs, outputs, inputsname, outputsname):
 		outputsname += ['' for o in range(outputs - len(outputsname))]
 	
 	if name != '':
-		fontsize = (size-4)/2/2
-		font = pygame.font.Font('../data/fonts/pixelfont.ttf', fontsize)
+		fontsize = (size-4)/2
+		font = pygame.font.Font('../data/fonts/gost.ttf', fontsize)
 	
 	cfontsize = int(fontsize/1.5)
-	cfont = pygame.font.Font('../data/fonts/pixelfont.ttf', cfontsize)
+	cfont = pygame.font.Font('../data/fonts/gost.ttf', cfontsize)
 	
 	maxchrlength = 0
 	

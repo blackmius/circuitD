@@ -32,7 +32,9 @@ class tab:
 
         fill_gradient(self.image, (60, 60, 60), (15, 15, 13))
 
-        self.font = font.Font('../data/fonts/pixelfont.ttf', 8)
+        self.fontsize = 18
+
+        self.font = font.Font('../data/fonts/gost.ttf', self.fontsize)
 
         self.image.blit(self.font.render(self.name, 0, (255, 255, 255)), (4, self.h/2-self.font.size(self.name)[1]/2))
 
@@ -56,13 +58,13 @@ class tab:
         self.elementImg = Surface((50, 50))
         self.elementImg.fill((255, 255, 255), (2, 2, 46, 46))
 
-        self.font = font.Font('../data/fonts/pixelfont.ttf', 8)
+        self.font = font.Font('../data/fonts/gost.ttf', self.fontsize)
 
     def resize(self):
         d = 0
         
         for i in self.elements:
-            d += len(i[0].split('\n'))*12
+            d += len(i[0].split('\n'))*(self.fontsize+4)
 
         if self.open and self.elements != []:
             self.surfaceH = (len(self.elements)/2 + len(self.elements)%2)*self.circuitSize + (len(self.elements)/2 + (len(self.elements)%2) + 1)*self.circuitIntend + self.h + d
@@ -82,14 +84,16 @@ class tab:
                     self.surface.blit(self.elements[y][1], (20, y*self.circuitSize + (y+1)*self.circuitIntend + self.h + d))
                     
                     for i in range(len(self.elements[y][0].split('\n'))):
-                        self.surface.blit(self.font.render(self.elements[y][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[y][0].split('\n')[i])[0]/2, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*8 + i*4)))
-                        b += 12
+                        self.surface.blit(self.font.render(self.elements[y][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[y][0].split('\n')[i])[0]/2, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*self.fontsize + i*4)))
+                        
+                        b += self.fontsize+4
 
                     self.surface.blit(self.elements[y+1][1], (120, y*self.circuitSize + (y+1)*self.circuitIntend + self.h + d))
                     
                     for i in range(len(self.elements[y+1][0].split('\n'))):
-                        self.surface.blit(self.font.render(self.elements[y+1][0].split('\n')[i], 0, (0, 0, 0)), ((145 - self.font.size(self.elements[y+1][0].split('\n')[i])[0]/2, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*8 + i*4)))
-                        b += 12
+                        self.surface.blit(self.font.render(self.elements[y+1][0].split('\n')[i], 0, (0, 0, 0)), ((145 - self.font.size(self.elements[y+1][0].split('\n')[i])[0]/2, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*self.fontsize + i*4)))
+                        
+                        b += self.fontsize+4
 
                     d += b if b > k else k
 
@@ -97,13 +101,13 @@ class tab:
                     self.surface.blit(self.elements[-1:][0][1], (20, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d))
                     
                     for i in range(len(self.elements[-1:][0][0].split('\n'))):
-                        self.surface.blit(self.font.render(self.elements[-1:][0][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[-1:][0][0].split('\n')[i])[0]/2, (y+2)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*8 + i*4)))
+                        self.surface.blit(self.font.render(self.elements[-1:][0][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[-1:][0][0].split('\n')[i])[0]/2, (y+2)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*self.fontsize + i*4)))
             
             if len(self.elements) == 1:
                 self.surface.blit(self.elements[-1:][0][1], (20, self.circuitIntend + self.h + d))
                 
                 for i in range(len(self.elements[-1:][0][0].split('\n'))):
-                    self.surface.blit(self.font.render(self.elements[-1:][0][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[-1:][0][0].split('\n')[i])[0]/2, self.circuitSize + self.circuitIntend + self.h + d + i*8 + i*4)))
+                    self.surface.blit(self.font.render(self.elements[-1:][0][0].split('\n')[i], 0, (0, 0, 0)), ((45 - self.font.size(self.elements[-1:][0][0].split('\n')[i])[0]/2, self.circuitSize + self.circuitIntend + self.h + d + i*self.fontsize + i*4)))
         
         else:
             self.surfaceH = self.h
