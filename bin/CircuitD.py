@@ -11,7 +11,6 @@ import os
 import sys
 
 import math
-import logic
 
 get_current_second = lambda: int(time.time())
 get_current_milisecond = lambda: int(round(time.time() * 1000))
@@ -191,9 +190,30 @@ def mainloop():
         workspace.draw()
         workspace.update()
         
-        offset = palette.update()
-        if type(offset) is int:
-            workspace.change_offset(offset)
+        gate = palette.update()
+        if type(gate) is int:
+            workspace.change_offset(gate)
+
+        if type(gate) is str:
+            outputs = 0
+            inputs = 0
+
+            if gate in ['1', '0', 'Switch']:
+                outputs = 1
+
+            elif gate in ['Bulb']:
+                inputs = 1
+
+            elif gate in ['And', 'Or']:
+                outputs = 1
+                inputs = 2
+
+            elif gate in ['Not']:  
+                outputs = 1
+                inputs = 1
+
+            workspace.create_gate([gate, inputs, outputs, ['a', 'b'], ['c']])
+
         palette.draw(window.screen) 
         
         panels.draw()

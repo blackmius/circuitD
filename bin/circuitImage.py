@@ -24,7 +24,12 @@ def circuitImage(name, size, inputs, outputs, inputsname, outputsname):
 		if len(i) > maxchrlength:
 			maxchrlength = len(i)
 	
-	connectIndent = size*2/inputs if inputs > outputs else size*2/outputs
+	if inputs > outputs:
+		connectIndent = size*2/inputs
+ 	
+ 	else:
+ 		connectIndent = size*2/outputs
+
 	sideIndent = connectIndent/2
 	
 	if size < len(name)*fontsize:
@@ -49,7 +54,7 @@ def circuitImage(name, size, inputs, outputs, inputsname, outputsname):
 	circuit.fill((255, 255, 255), (2, 2, w-4, h-4))
 
 	if name != '': 
-		circuit.blit(font.render(name, 0, (0, 0, 0)), (2 + (w-4)/2 - len(name)*fontsize/2, h/8/2))
+		circuit.blit(font.render(name, 0, (0, 0, 0)), (w/2 - font.size(name)[0]/2, h/8/2))
 	
 	surface.blit(circuit, (fontsize, 0))
 	

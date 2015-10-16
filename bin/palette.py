@@ -14,6 +14,11 @@ percent = lambda max, percent: int(float(max)/100*percent)
 
 strdiv = lambda line, n: [line[i:i+n] for i in range(0, len(line), n)]
 
+collide = lambda x1, x2, y1, y2, w1, w2, h1, h2: x1+w1>x2 and x1<x2+w2 and y1+h1>y2 and y1<y2+h2 
+
+mpx = lambda: mouse.get_pos()[0]
+mpy = lambda: mouse.get_pos()[1]
+
 class tab:
     def __init__(self, name, elements, palette):
         self.name = name
@@ -60,6 +65,8 @@ class tab:
 
         self.font = font.Font('../data/fonts/gost.ttf', self.fontsize)
 
+        self.mousepressed = False
+
     def resize(self):
         d = 0
         
@@ -67,13 +74,12 @@ class tab:
             d += len(i[0].split('\n'))*(self.fontsize+4)
 
         if self.open and self.elements != []:
-            self.surfaceH = (len(self.elements)/2 + len(self.elements)%2)*self.circuitSize + (len(self.elements)/2 + (len(self.elements)%2) + 1)*self.circuitIntend + self.h + d
+            self.surfaceH = (len(self.elements)/2 + len(self.elements)%2)*self.circuitSize + 2*self.circuitIntend + self.h + d
 
             self.surface = Surface((self.w, self.surfaceH))
 
             self.surface.fill((208, 214, 219, 255))
 
-            y = 0
             d = 0
 
             if len(self.elements) > 1:
@@ -93,7 +99,7 @@ class tab:
                     for i in range(len(self.elements[y+1][0].split('\n'))):
                         self.surface.blit(self.font.render(self.elements[y+1][0].split('\n')[i], 0, (0, 0, 0)), ((145 - self.font.size(self.elements[y+1][0].split('\n')[i])[0]/2, (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + i*self.fontsize + i*4)))
                         
-                        b += self.fontsize+4
+                        k += self.fontsize+4
 
                     d += b if b > k else k
 
@@ -150,13 +156,41 @@ class tab:
                     self.y += self.h
 
             self.button.change_whereuponvars(y = self.y + 36 - int(self.palette.slider.absoffset))
-    
+        
         if self.button.update():
             self.open = not self.open
 
             self.resize()
 
             return True
+
+        if self.open and self.palette.element == None and not self.mousepressed and self.x == 0:
+            if mouse.get_pressed()[0]:
+                d = 0
+
+                self.mousepressed = True
+
+                if len(self.elements) > 1:
+                    for y in range(len(self.elements)/2):
+                        if collide(20, mpx(), y*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + self.y - int(self.palette.slider.absoffset) + 36, mpy(), 50, 1, 50, 1):
+                            return self.elements[y][0]   
+
+                        if collide(120, mpx(), y*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + self.y - int(self.palette.slider.absoffset) + 36, mpy(), 50, 1, 50, 1):
+                            return self.elements[y+1][0]                
+
+                        d += len(self.elements[y+1][0].split('\n'))*(self.fontsize + 4) if self.fontsize*len(self.elements[y+1][0].split('\n')) > self.fontsize*len(self.elements[y][0].split('\n')) else (self.fontsize + 4)*len(self.elements[y][0].split('\n'))
+
+                    if len(self.elements)%2 == 1:
+                        if collide(20, mpx(), (y+1)*self.circuitSize + (y+1)*self.circuitIntend + self.h + d + self.y - int(self.palette.slider.absoffset) + 36, mpy(), 50, 1, 50, 1):
+                            return self.elements[-1:][0][0] 
+                        
+                if len(self.elements) == 1:
+                    if collide(20, mpx(), self.circuitIntend + self.h + d + self.y - int(self.palette.slider.absoffset) + 36, mpy(), 50, 1, 50, 1):
+                        return self.elements[-1:][0][0]
+
+        if not mouse.get_pressed()[0] and self.mousepressed:
+            self.mousepressed = False
+            
 
     def draw(self):
         self.button.draw()
@@ -213,14 +247,22 @@ class palette:
         for i in ['Inputs', 'Outputs', 'Prim elements', 'Elements']:
             self.tabs.append(tab(i, [], self))
 
-        self.tabs[0].addElement('a')
-        self.tabs[0].addElement('test test2')
-        self.tabs[0].addElement('test test3')
-        self.tabs[0].addElement('test test4')
-        self.tabs[0].addElement('test test5')
+        self.tabs[0].addElement('Constant 1')
+        self.tabs[0].addElement('Constant 0')
+        self.tabs[0].addElement('Switch')
+        
+        self.tabs[1].addElement('Bulb')
+        
+        self.tabs[2].addElement('Not')
+        self.tabs[2].addElement('And')
+        self.tabs[2].addElement('Or')
 
 
         self.tabupdated = True
+
+        self.element = None
+
+        self.elementImg = None
         
     def resize(self):
         self.width = 200
@@ -251,10 +293,38 @@ class palette:
 
     def updateTabs(self):
         for i in self.tabs:
-            if i.update():
+            tab = i.update()
+            if tab == True:
                 self.tabupdated = True
 
                 self.updateTabs()
+
+            elif type(tab) is str:
+                self.element = tab
+
+                inputs = 0
+                outputs = 0
+
+                self.element = self.element.replace('\n', ' ')
+
+                if self.element in ['Constant 1', 'Constant 0', 'Switch']:
+                    outputs = 1
+
+                    if 'Constant' in self.element:
+                        self.element = self.element.replace('Constant ', '')
+
+                elif self.element in ['Bulb']:
+                    inputs = 1
+
+                elif self.element in ['And', 'Or']:
+                    outputs = 1
+                    inputs = 2
+
+                elif self.element in ['Not']:  
+                    outputs = 1
+                    inputs = 1
+
+                self.elementImg = circuitImage(self.element, 48, inputs, outputs, ['a', 'b'], ['c'])
 
     def update(self):
         if self.offset != self.offsetTo:
@@ -299,7 +369,17 @@ class palette:
                 self.slider.change_offset(maxoffset = 0)
 
             self.tabupdated = False
-        
+
+        if self.element != None:
+            if not mouse.get_pressed()[0]:
+                el = self.element
+                
+                self.element = None
+                self.elementImg = None
+                
+                if mpx() > self.width:
+                    return el
+
         if self.pastoffsetreturn != self.offsetreturn:
             self.pastoffsetreturn = self.offsetreturn
             
@@ -317,3 +397,6 @@ class palette:
 
         self.arrows.draw()
         self.slider.draw()
+
+        if self.element != None:
+            self.window.screen.blit(self.elementImg, (mpx() - 48, mpy() - 48))

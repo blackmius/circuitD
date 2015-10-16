@@ -8,6 +8,8 @@ from circuitImage import circuitImage
 
 from pixelCollide import pixelCollide, getMask
 
+import logic
+
 mpx = lambda: mouse.get_pos()[0]
 mpy = lambda: mouse.get_pos()[1]
 
@@ -210,7 +212,7 @@ class gate:
 		self.x = mpx() + camera.x - self.workspace.offset if x == None else x
 		self.y = mpy() + camera.y - 36 if y == None else y
 		
-		self.image = circuitImage(self.type[0], 64, self.type[1], self.type[2], self.type[3], self.type[4])
+		self.image = circuitImage(self.type[0], 32, self.type[1], self.type[2], self.type[3], self.type[4])
 
 		self.w, self.h = self.image.get_size()
 		self.outline = outline(self.image, color = (0, 121, 219))
